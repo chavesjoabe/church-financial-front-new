@@ -8,6 +8,7 @@ export interface User {
   createdAt: string;
   updatedAt: string;
   isAdmin: boolean;
+  password: string;
 }
 
 export interface BalanceItem {
