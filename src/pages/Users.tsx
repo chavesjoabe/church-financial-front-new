@@ -39,7 +39,9 @@ export default function Usuarios() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    role: 'user' as 'admin' | 'user',
+    password: '',
+    document: '',
+    role: 'COMMON' as 'ADMIN' | 'COMMON',
   });
 
   useEffect(() => {
@@ -48,7 +50,7 @@ export default function Usuarios() {
 
   const loadUsuarios = async () => {
     try {
-      const data = await UserService.list();
+      const data = await UserService.getAll();
       setUsuarios(data);
     } catch (error) {
       console.error('Erro ao carregar usuários:', error);
@@ -61,6 +63,8 @@ export default function Usuarios() {
       setFormData({
         name: usuario.name,
         email: usuario.email,
+        password: usuario.password,
+        document: usuario.document,
         role: usuario.role,
       });
     } else {
@@ -68,7 +72,7 @@ export default function Usuarios() {
       setFormData({
         name: '',
         email: '',
-        role: 'user',
+        role: 'COMMON',
       });
     }
     setOpen(true);
@@ -81,7 +85,7 @@ export default function Usuarios() {
   };
 
   const handleSubmit = async () => {
-    if (!formData.name || !formData.email) {
+    if (!formData.name || !formData.email || !formData.password) {
       setError('Nome e email são obrigatórios');
       return;
     }
@@ -101,7 +105,8 @@ export default function Usuarios() {
           name: formData.name,
           email: formData.email,
           role: formData.role,
-          active: true,
+          password: formData.password,
+          document: formData.document,
         });
       }
       await loadUsuarios();
@@ -231,6 +236,14 @@ export default function Usuarios() {
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             />
             <TextField
+              autoFocus
+              margin="dense"
+              label="Documento"
+              fullWidth
+              value={formData.document}
+              onChange={(e) => setFormData({ ...formData, document: e.target.value })}
+            />
+            <TextField
               margin="dense"
               label="Email"
               type="email"
@@ -238,15 +251,23 @@ export default function Usuarios() {
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             />
+            <TextField
+              margin="dense"
+              label="Senha"
+              type="password"
+              fullWidth
+              value={formData.password}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+            />
             <FormControl fullWidth margin="dense">
               <InputLabel>Perfil</InputLabel>
               <Select
                 value={formData.role}
                 label="Perfil"
-                onChange={(e) => setFormData({ ...formData, role: e.target.value as 'admin' | 'user' })}
+                onChange={(e) => setFormData({ ...formData, role: e.target.value as 'ADMIN' | 'COMMON' })}
               >
-                <MenuItem value="user">Usuário</MenuItem>
-                <MenuItem value="admin">Administrador</MenuItem>
+                <MenuItem value="COMMON">Usuário</MenuItem>
+                <MenuItem value="ADMIN">Administrador</MenuItem>
               </Select>
             </FormControl>
           </DialogContent>
