@@ -111,6 +111,7 @@ export default function Login() {
             >
               {loading ? 'Entrando...' : 'Entrar'}
             </Button>
+          </Box>
         </Paper>
       </Box>
     </Container>
