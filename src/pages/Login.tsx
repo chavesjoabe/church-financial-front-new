@@ -22,7 +22,7 @@ export default function Login() {
   const formatCPF = (value: string) => {
     const cleaned = value.replace(/\D/g, '');
     const limited = cleaned.substring(0, 11);
-    
+
     if (limited.length <= 3) return limited;
     if (limited.length <= 6) return `${limited.slice(0, 3)}.${limited.slice(3)}`;
     if (limited.length <= 9) return `${limited.slice(0, 3)}.${limited.slice(3, 6)}.${limited.slice(6)}`;
@@ -111,19 +111,6 @@ export default function Login() {
             >
               {loading ? 'Entrando...' : 'Entrar'}
             </Button>
-
-            <Box sx={{ mt: 2, p: 2, bgcolor: 'grey.100', borderRadius: 1 }}>
-              <Typography variant="caption" display="block" gutterBottom>
-                <strong>Credenciais de teste:</strong>
-              </Typography>
-              <Typography variant="caption" display="block">
-                Admin: 123.456.789-00 / admin123
-              </Typography>
-              <Typography variant="caption" display="block">
-                Usuário: 987.654.321-00 / user123
-              </Typography>
-            </Box>
-          </Box>
         </Paper>
       </Box>
     </Container>
