@@ -31,7 +31,6 @@ import {
   Grid,
 } from '@mui/material';
 import { Add, Delete, Check, Search } from '@mui/icons-material';
-import { Layout } from '../components/Layout';
 import { BalanceService } from '../services/balanceService';
 import { Balance } from '../types';
 import { useAuth } from '../contexts/AuthContext';
@@ -92,7 +91,7 @@ export default function Balances() {
         type: balance.type,
         unofficial: balance.unofficial || false,
         incomingType: balance.unofficial ? "NON_OFICIAL" : "OFICIAL",
-        paymentMethod: balance.paymentMethod || '',
+        paymentMethod: "MONEY"
       });
     } else {
       setEditingId(null);
@@ -103,8 +102,8 @@ export default function Balances() {
         category: '',
         type: 'INCOMING',
         unofficial: false,
-        paymentMethod: '',
-        incomingType: "OFICIAL"
+        paymentMethod: 'MONEY',
+        incomingType: 'OFICIAL'
       });
     }
     setOpen(true);
@@ -147,7 +146,7 @@ export default function Balances() {
         balanceDate: new Date(formData.balanceDate).toISOString(),
         category: formData.category,
         type: formData.type,
-        paymentMethod: formData.paymentMethod,
+        paymentMethod: 'MONEY',
       };
 
       if (formData.type === 'INCOMING') {
@@ -219,6 +218,23 @@ export default function Balances() {
   const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString('pt-BR');
   };
+
+  const outgoingCategories = [
+    "ALIMENTAÇÃO",
+    "OFERTA MISSIONÁRIA",
+    "COMPRAS DIVERSAS",
+    "PAGAMENTOS",
+    "REEMBOLSOS",
+    "OUTROS"
+  ];
+
+
+  const incomingCategories = [
+    "DÍZIMOS",
+    "OFERTAS",
+    "VOTOS",
+    "OUTROS"
+  ];
 
   const paymentMethods = [
     'PIX',
@@ -454,28 +470,29 @@ export default function Balances() {
             InputLabelProps={{ shrink: true }}
             sx={{ mb: 2 }}
           />
-          <TextField
-            margin="dense"
-            label="Categoria"
-            fullWidth
-            value={formData.category}
-            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-            placeholder={formData.type === 'INCOMING' ? 'Ex: Dízimo, Oferta, Doação' : 'Ex: Contas, Manutenção, Eventos'}
-            sx={{ mb: 2 }}
-          />
-
           <FormControl fullWidth margin="dense" sx={{ mb: 2 }}>
-            <InputLabel>Forma de Pagamento</InputLabel>
+            <InputLabel>Categoria</InputLabel>
             <Select
-              value={formData.paymentMethod}
-              label="Forma de Pagamento"
-              onChange={(e) => setFormData({ ...formData, paymentMethod: e.target.value })}
+              value={formData.category}
+              label="Categoria"
+              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
             >
-              {paymentMethods.map((method) => (
-                <MenuItem key={method} value={method}>
-                  {method}
-                </MenuItem>
-              ))}
+              {
+                formData.type == "INCOMING" ?
+                  incomingCategories.map((category) => (
+                    <MenuItem key={category} value={category}>
+                      {category}
+                    </MenuItem>
+                  ))
+
+                  :
+
+                  outgoingCategories.map((category) => (
+                    <MenuItem key={category} value={category}>
+                      {category}
+                    </MenuItem>
+                  ))
+              }
             </Select>
           </FormControl>
 
