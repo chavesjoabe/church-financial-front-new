@@ -1,4 +1,4 @@
-import { Balance, ReportData } from '../types';
+import { Balance, BalanceItem, ReportData } from '../types';
 import { API_BASE_URL } from '../config/api';
 
 export class BalanceService {
@@ -143,6 +143,27 @@ export class BalanceService {
 
     const response = await fetch(
       `${API_BASE_URL}/api/balance/report/accounting?startDate=${convertedStartDate}&endDate=${convertedEndDate}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: this.getToken(),
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Erro ao extrair relatório');
+    }
+
+    return response.json();
+  }
+
+  public static async extractOutgoingReport(startDate: string, endDate: string): Promise<BalanceItem[]> {
+    const convertedStartDate = new Date(startDate).toISOString();
+    const convertedEndDate = new Date(endDate).toISOString();
+
+    const response = await fetch(
+      `${API_BASE_URL}/api/balance/report/outgoing?startDate=${convertedStartDate}&endDate=${convertedEndDate}`,
       {
         headers: {
           'Content-Type': 'application/json',
