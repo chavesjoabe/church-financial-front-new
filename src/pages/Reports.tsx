@@ -22,7 +22,6 @@ import {
   Tab,
 } from '@mui/material';
 import { Search, Download, PictureAsPdf, TableChart } from '@mui/icons-material';
-import { Layout } from '../components/Layout';
 import { BalanceService } from '../services/balanceService';
 import { ReportData, BalanceItem, NonOficialBalance } from '../types';
 import { useAuth } from '../contexts/AuthContext';
@@ -462,158 +461,156 @@ export default function Relatorios() {
   );
 
   return (
-    <Layout>
-      <Box sx={{ maxWidth: 1400, mx: 'auto', px: { xs: 2, sm: 3 } }}>
-        <Box sx={{ mb: 4 }}>
-          <Typography variant="h4" gutterBottom>
-            Relatórios
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
-            Gere relatórios financeiros personalizados
-          </Typography>
-        </Box>
-
-        <Paper sx={{ p: 3, mb: 3 }}>
-          <Typography variant="h6" gutterBottom>
-            Filtros
-          </Typography>
-          <Grid container spacing={2} alignItems="center">
-            <Grid item xs={12} sm={6} md={3}>
-              <TextField
-                fullWidth
-                label="Data Inicial"
-                type="date"
-                value={filters.startDate}
-                onChange={(e) => setFilters({ ...filters, startDate: e.target.value })}
-                InputLabelProps={{ shrink: true }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <TextField
-                fullWidth
-                label="Data Final"
-                type="date"
-                value={filters.endDate}
-                onChange={(e) => setFilters({ ...filters, endDate: e.target.value })}
-                InputLabelProps={{ shrink: true }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <FormControl fullWidth>
-                <InputLabel>Tipo</InputLabel>
-                <Select
-                  value={filters.type}
-                  label="Tipo"
-                  onChange={(e) => setFilters({ ...filters, type: e.target.value })}
-                >
-                  <MenuItem value="all">Todos</MenuItem>
-                  <MenuItem value="INCOMING">Entradas</MenuItem>
-                  <MenuItem value="OUTGOING">Saídas</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <Button
-                fullWidth
-                variant="contained"
-                startIcon={<Search />}
-                onClick={handleSearch}
-                disabled={loading}
-                sx={{ height: 56 }}
-              >
-                {loading ? 'Buscando...' : 'Buscar'}
-              </Button>
-            </Grid>
-          </Grid>
-        </Paper>
-
-        {reportData && (
-          <>
-            <Paper sx={{ p: 3, mb: 3 }}>
-              <Typography variant="h6" gutterBottom>
-                Resumo Geral
-              </Typography>
-              <Grid container spacing={3}>
-                <Grid item xs={12} sm={6} md={3}>
-                  <Typography variant="body2" color="text.secondary">
-                    Lançamentos Oficiais
-                  </Typography>
-                  <Typography variant="h6" color="success.main">
-                    {formatCurrency(reportData.balancesTotal.total)}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} sm={6} md={3}>
-                  <Typography variant="body2" color="text.secondary">
-                    Transferências
-                  </Typography>
-                  <Typography variant="h6" color="success.main">
-                    {formatCurrency(reportData.transferBalancesTotal.total)}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} sm={6} md={3}>
-                  <Typography variant="body2" color="text.secondary">
-                    Transferências GEOL
-                  </Typography>
-                  <Typography variant="h6" color="success.main">
-                    {formatCurrency(reportData.transferGeolBalancesTotal.total)}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} sm={6} md={3}>
-                  <Typography variant="body2" color="text.secondary">
-                    Não Oficial
-                  </Typography>
-                  <Typography variant="h6" color="warning.main">
-                    {formatCurrency(reportData.nonOficialBalances.reduce((sum, b) => sum + b.value, 0))}
-                  </Typography>
-                </Grid>
-              </Grid>
-            </Paper>
-
-            <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
-              <Button
-                variant="outlined"
-                startIcon={<Download />}
-                onClick={handleMenuClick}
-              >
-                Exportar
-              </Button>
-              <Menu
-                anchorEl={anchorEl}
-                open={openMenu}
-                onClose={handleMenuClose}
-              >
-                <MenuItemButton onClick={handleExportPDF}>
-                  <PictureAsPdf sx={{ mr: 1 }} />
-                  Exportar PDF
-                </MenuItemButton>
-                <MenuItemButton onClick={handleExportExcel}>
-                  <TableChart sx={{ mr: 1 }} />
-                  Exportar Excel
-                </MenuItemButton>
-              </Menu>
-            </Box>
-
-            <Paper sx={{ mb: 3 }}>
-              <Tabs value={currentTab} onChange={handleTabChange}>
-                <Tab label="Lançamentos Oficiais" />
-                <Tab label="Transferências" />
-                <Tab label="Transferências GEOL" />
-                <Tab label="Não Oficial" />
-              </Tabs>
-              <Box sx={{ p: 2 }}>
-                {currentTab === 0 && reportData.balances.length > 0 &&
-                  renderBalanceTable(reportData.balances, 'Lançamentos Oficiais')}
-                {currentTab === 1 && reportData.transferBalances.length > 0 &&
-                  renderBalanceTable(reportData.transferBalances, 'Transferências')}
-                {currentTab === 2 && reportData.transferGeolBalances.length > 0 &&
-                  renderBalanceTable(reportData.transferGeolBalances, 'Transferências GEOL')}
-                {currentTab === 3 && reportData.nonOficialBalances.length > 0 &&
-                  renderNonOficialTable(reportData.nonOficialBalances)}
-              </Box>
-            </Paper>
-          </>
-        )}
+    <Box sx={{ maxWidth: 1400, mx: 'auto', px: { xs: 2, sm: 3 } }}>
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" gutterBottom>
+          Relatórios
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          Gere relatórios financeiros personalizados
+        </Typography>
       </Box>
-    </Layout>
+
+      <Paper sx={{ p: 3, mb: 3 }}>
+        <Typography variant="h6" gutterBottom>
+          Filtros
+        </Typography>
+        <Grid container spacing={2} alignItems="center">
+          <Grid item xs={12} sm={6} md={3}>
+            <TextField
+              fullWidth
+              label="Data Inicial"
+              type="date"
+              value={filters.startDate}
+              onChange={(e) => setFilters({ ...filters, startDate: e.target.value })}
+              InputLabelProps={{ shrink: true }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <TextField
+              fullWidth
+              label="Data Final"
+              type="date"
+              value={filters.endDate}
+              onChange={(e) => setFilters({ ...filters, endDate: e.target.value })}
+              InputLabelProps={{ shrink: true }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <FormControl fullWidth>
+              <InputLabel>Tipo</InputLabel>
+              <Select
+                value={filters.type}
+                label="Tipo"
+                onChange={(e) => setFilters({ ...filters, type: e.target.value })}
+              >
+                <MenuItem value="all">Todos</MenuItem>
+                <MenuItem value="INCOMING">Entradas</MenuItem>
+                <MenuItem value="OUTGOING">Saídas</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Button
+              fullWidth
+              variant="contained"
+              startIcon={<Search />}
+              onClick={handleSearch}
+              disabled={loading}
+              sx={{ height: 56 }}
+            >
+              {loading ? 'Buscando...' : 'Buscar'}
+            </Button>
+          </Grid>
+        </Grid>
+      </Paper>
+
+      {reportData && (
+        <>
+          <Paper sx={{ p: 3, mb: 3 }}>
+            <Typography variant="h6" gutterBottom>
+              Resumo Geral
+            </Typography>
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={6} md={3}>
+                <Typography variant="body2" color="text.secondary">
+                  Lançamentos Oficiais
+                </Typography>
+                <Typography variant="h6" color="success.main">
+                  {formatCurrency(reportData.balancesTotal.total)}
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <Typography variant="body2" color="text.secondary">
+                  Transferências
+                </Typography>
+                <Typography variant="h6" color="success.main">
+                  {formatCurrency(reportData.transferBalancesTotal.total)}
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <Typography variant="body2" color="text.secondary">
+                  Transferências GEOL
+                </Typography>
+                <Typography variant="h6" color="success.main">
+                  {formatCurrency(reportData.transferGeolBalancesTotal.total)}
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <Typography variant="body2" color="text.secondary">
+                  Não Oficial
+                </Typography>
+                <Typography variant="h6" color="warning.main">
+                  {formatCurrency(reportData.nonOficialBalances.reduce((sum, b) => sum + b.value, 0))}
+                </Typography>
+              </Grid>
+            </Grid>
+          </Paper>
+
+          <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
+            <Button
+              variant="outlined"
+              startIcon={<Download />}
+              onClick={handleMenuClick}
+            >
+              Exportar
+            </Button>
+            <Menu
+              anchorEl={anchorEl}
+              open={openMenu}
+              onClose={handleMenuClose}
+            >
+              <MenuItemButton onClick={handleExportPDF}>
+                <PictureAsPdf sx={{ mr: 1 }} />
+                Exportar PDF
+              </MenuItemButton>
+              <MenuItemButton onClick={handleExportExcel}>
+                <TableChart sx={{ mr: 1 }} />
+                Exportar Excel
+              </MenuItemButton>
+            </Menu>
+          </Box>
+
+          <Paper sx={{ mb: 3 }}>
+            <Tabs value={currentTab} onChange={handleTabChange}>
+              <Tab label="Lançamentos Oficiais" />
+              <Tab label="Transferências" />
+              <Tab label="Transferências GEOL" />
+              <Tab label="Não Oficial" />
+            </Tabs>
+            <Box sx={{ p: 2 }}>
+              {currentTab === 0 && reportData.balances.length > 0 &&
+                renderBalanceTable(reportData.balances, 'Lançamentos Oficiais')}
+              {currentTab === 1 && reportData.transferBalances.length > 0 &&
+                renderBalanceTable(reportData.transferBalances, 'Transferências')}
+              {currentTab === 2 && reportData.transferGeolBalances.length > 0 &&
+                renderBalanceTable(reportData.transferGeolBalances, 'Transferências GEOL')}
+              {currentTab === 3 && reportData.nonOficialBalances.length > 0 &&
+                renderNonOficialTable(reportData.nonOficialBalances)}
+            </Box>
+          </Paper>
+        </>
+      )}
+    </Box>
   );
 }
