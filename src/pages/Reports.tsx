@@ -55,13 +55,9 @@ export default function Relatorios() {
     }
 
     setLoading(true);
+
     try {
-      const data = await BalanceService.extractReport(
-        filters.startDate,
-        filters.endDate,
-        filters.type,
-        token
-      );
+      const data = await BalanceService.extractReport(filters.startDate, filters.endDate);
       setReportData(data);
     } catch (error) {
       alert('Erro ao gerar relatório');
@@ -85,29 +81,29 @@ export default function Relatorios() {
 
   const handleExportPDF = () => {
     handleMenuClose();
-    
+
     if (!reportData) {
       alert('Nenhum dado para exportar');
       return;
     }
 
     const doc = new jsPDF();
-    
+
     // Título
     doc.setFontSize(18);
     doc.text('Relatório Financeiro - Ebenezer Tesouraria', 14, 20);
-    
+
     // Período
     doc.setFontSize(11);
     doc.text(`Período: ${new Date(filters.startDate).toLocaleDateString('pt-BR')} a ${new Date(filters.endDate).toLocaleDateString('pt-BR')}`, 14, 30);
-    
+
     let startY = 40;
 
     // Resumo Geral
     doc.setFontSize(12);
     doc.text('Resumo Geral', 14, startY);
     startY += 6;
-    
+
     doc.setFontSize(10);
     doc.text(`Total Lançamentos Oficiais: ${formatCurrency(reportData.balancesTotal.total)}`, 14, startY);
     startY += 6;
@@ -115,7 +111,7 @@ export default function Relatorios() {
     startY += 6;
     doc.text(`Total Transferências GEOL: ${formatCurrency(reportData.transferGeolBalancesTotal.total)}`, 14, startY);
     startY += 6;
-    
+
     const totalNonOficial = reportData.nonOficialBalances.reduce((sum, b) => sum + b.value, 0);
     doc.text(`Total Não Oficial: ${formatCurrency(totalNonOficial)}`, 14, startY);
     startY += 10;
@@ -125,7 +121,7 @@ export default function Relatorios() {
       doc.setFontSize(12);
       doc.text('Lançamentos Oficiais', 14, startY);
       startY += 6;
-      
+
       autoTable(doc, {
         startY: startY,
         head: [['Data', 'Tipo', 'Descrição', 'Valor', 'Líder 1', 'Líder 2', 'Igreja Principal', 'Ministério', 'Líder Principal']],
@@ -143,7 +139,7 @@ export default function Relatorios() {
         styles: { fontSize: 7 },
         headStyles: { fillColor: [41, 128, 185] },
       });
-      
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       startY = (doc as any).lastAutoTable.finalY + 10;
     }
@@ -154,11 +150,11 @@ export default function Relatorios() {
         doc.addPage();
         startY = 20;
       }
-      
+
       doc.setFontSize(12);
       doc.text('Transferências', 14, startY);
       startY += 6;
-      
+
       autoTable(doc, {
         startY: startY,
         head: [['Data', 'Descrição', 'Valor', 'Líder 1', 'Líder 2', 'Igreja Principal', 'Ministério', 'Líder Principal']],
@@ -175,7 +171,7 @@ export default function Relatorios() {
         styles: { fontSize: 7 },
         headStyles: { fillColor: [41, 128, 185] },
       });
-      
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       startY = (doc as any).lastAutoTable.finalY + 10;
     }
@@ -186,11 +182,11 @@ export default function Relatorios() {
         doc.addPage();
         startY = 20;
       }
-      
+
       doc.setFontSize(12);
       doc.text('Transferências GEOL', 14, startY);
       startY += 6;
-      
+
       autoTable(doc, {
         startY: startY,
         head: [['Data', 'Descrição', 'Valor', 'Líder 1', 'Líder 2', 'Igreja Principal', 'Ministério', 'Líder Principal']],
@@ -207,7 +203,7 @@ export default function Relatorios() {
         styles: { fontSize: 7 },
         headStyles: { fillColor: [41, 128, 185] },
       });
-      
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       startY = (doc as any).lastAutoTable.finalY + 10;
     }
@@ -218,11 +214,11 @@ export default function Relatorios() {
         doc.addPage();
         startY = 20;
       }
-      
+
       doc.setFontSize(12);
       doc.text('Lançamentos Não Oficiais', 14, startY);
       startY += 6;
-      
+
       autoTable(doc, {
         startY: startY,
         head: [['Data', 'Tipo', 'Descrição', 'Valor', 'Responsável', 'Status']],
@@ -244,7 +240,7 @@ export default function Relatorios() {
 
   const handleExportExcel = () => {
     handleMenuClose();
-    
+
     if (!reportData) {
       alert('Nenhum dado para exportar');
       return;
@@ -362,8 +358,11 @@ export default function Relatorios() {
     }).format(value);
   };
 
-  const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString('pt-BR');
+  const formatDate = (stringDate: string): string => {
+    const date = new Date(stringDate);
+    const formatedDate = date.setHours(date.getHours() + 3);
+
+    return new Date(formatedDate).toLocaleDateString('pt-BR')
   };
 
   const renderBalanceTable = (balances: BalanceItem[], title: string) => (
@@ -571,9 +570,9 @@ export default function Relatorios() {
             </Paper>
 
             <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
-              <Button 
-                variant="outlined" 
-                startIcon={<Download />} 
+              <Button
+                variant="outlined"
+                startIcon={<Download />}
                 onClick={handleMenuClick}
               >
                 Exportar
@@ -602,13 +601,13 @@ export default function Relatorios() {
                 <Tab label="Não Oficial" />
               </Tabs>
               <Box sx={{ p: 2 }}>
-                {currentTab === 0 && reportData.balances.length > 0 && 
+                {currentTab === 0 && reportData.balances.length > 0 &&
                   renderBalanceTable(reportData.balances, 'Lançamentos Oficiais')}
-                {currentTab === 1 && reportData.transferBalances.length > 0 && 
+                {currentTab === 1 && reportData.transferBalances.length > 0 &&
                   renderBalanceTable(reportData.transferBalances, 'Transferências')}
-                {currentTab === 2 && reportData.transferGeolBalances.length > 0 && 
+                {currentTab === 2 && reportData.transferGeolBalances.length > 0 &&
                   renderBalanceTable(reportData.transferGeolBalances, 'Transferências GEOL')}
-                {currentTab === 3 && reportData.nonOficialBalances.length > 0 && 
+                {currentTab === 3 && reportData.nonOficialBalances.length > 0 &&
                   renderNonOficialTable(reportData.nonOficialBalances)}
               </Box>
             </Paper>
