@@ -15,7 +15,6 @@ import {
   Chip,
 } from '@mui/material';
 import { Check, Close } from '@mui/icons-material';
-import { Layout } from '../components/Layout';
 import { BalanceService } from '../services/balanceService';
 import { Balance } from '../types';
 import { useAuth } from '../contexts/AuthContext';
@@ -72,8 +71,11 @@ export default function PendingBalances() {
     }).format(value);
   };
 
-  const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString('pt-BR');
+  const formatDate = (stringDate: string): string => {
+    const date = new Date(stringDate);
+    const formatedDate = date.setHours(date.getHours() + 3);
+
+    return new Date(formatedDate).toLocaleDateString('pt-BR')
   };
 
   const canApprove = (balance: Balance) => {
