@@ -21,11 +21,16 @@ export interface BalanceItem {
   description: string;
   freeDescription: string;
   incomingType: string;
+  paymentMethod: string;
+  category: string;
+  responsibleName: string;
   churchFirstLeaderPercentage: number;
   churchSecondLeaderPercentage: number;
   mainChurchPercentage: number;
   ministryPercentage: number;
   mainLeaderPercentage: number;
+  approvedBy: string;
+  approvedAt: string;
 }
 
 export interface NonOficialBalance {
