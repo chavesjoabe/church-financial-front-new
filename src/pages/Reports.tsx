@@ -58,11 +58,11 @@ export default function Relatorios() {
 
     try {
       if (filters.type === 'outgoing') {
-        const data = await BalanceService.extractOutgoingReport(filters.startDate, filters.endDate);
+        const data = await BalanceService.extractReport<BalanceItem[]>(filters.startDate, filters.endDate, 'outgoing');
         setOutgoingReportData(data);
         setReportData(null);
       } else {
-        const data = await BalanceService.extractReport(filters.startDate, filters.endDate);
+        const data = await BalanceService.extractReport<ReportData>(filters.startDate, filters.endDate, 'accounting');
         setReportData(data);
         setOutgoingReportData(null);
       }
@@ -443,11 +443,14 @@ export default function Relatorios() {
     }).format(value);
   };
 
-  const formatDate = (stringDate: string): string => {
+  const formatDate = (stringDate: string, format: string = 'pt-BR'): string => {
     const date = new Date(stringDate);
     const formatedDate = date.setHours(date.getHours() + 3);
 
-    return new Date(formatedDate).toLocaleDateString('pt-BR')
+
+    const result = new Date(formatedDate).toLocaleDateString(format);
+    console.log(result);
+    return result
   };
 
   const renderBalanceTable = (balances: BalanceItem[], title: string) => (
