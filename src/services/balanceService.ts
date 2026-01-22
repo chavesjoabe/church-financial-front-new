@@ -137,12 +137,16 @@ export class BalanceService {
     return response.json();
   }
 
-  public static async extractReport(startDate: string, endDate: string): Promise<ReportData> {
-    const convertedStartDate = new Date(startDate).toISOString();
-    const convertedEndDate = new Date(endDate).toISOString();
+  public static async extractReport<T>(
+    startDate: string,
+    endDate: string,
+    reportType: 'accounting' | 'outgoing'
+  ): Promise<T> {
+    const convertedStartDate = new Date(this.formatDate(startDate)).toISOString();
+    const convertedEndDate = new Date(this.formatDate(endDate)).toISOString();
 
     const response = await fetch(
-      `${API_BASE_URL}/api/balance/report/accounting?startDate=${convertedStartDate}&endDate=${convertedEndDate}`,
+      `${API_BASE_URL}/api/balance/report/${reportType}?startDate=${convertedStartDate}&endDate=${convertedEndDate}`,
       {
         headers: {
           'Content-Type': 'application/json',
@@ -158,24 +162,14 @@ export class BalanceService {
     return response.json();
   }
 
-  public static async extractOutgoingReport(startDate: string, endDate: string): Promise<BalanceItem[]> {
-    const convertedStartDate = new Date(startDate).toISOString();
-    const convertedEndDate = new Date(endDate).toISOString();
+  public static formatDate(stringDate: string) {
+    const date = new Date(stringDate);
+    const formatedDate = date.setHours(date.getHours() - 3);
 
-    const response = await fetch(
-      `${API_BASE_URL}/api/balance/report/outgoing?startDate=${convertedStartDate}&endDate=${convertedEndDate}`,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: this.getToken(),
-        },
-      }
-    );
 
-    if (!response.ok) {
-      throw new Error('Erro ao extrair relatório');
-    }
-
-    return response.json();
+    const result = new Date(formatedDate).toLocaleDateString('en-US');
+    console.log(result);
+    return result
   }
+
 }
