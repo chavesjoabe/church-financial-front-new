@@ -6,6 +6,7 @@ import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import PeopleIcon from '@mui/icons-material/People';
+import { AccountBalance } from '@mui/icons-material';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -19,6 +20,14 @@ export default function Home() {
       path: '/balances',
       color: '#4caf50',
       allowedForAll: true,
+    },
+    {
+      title: 'Importaçao de Extrato bancário',
+      description: 'Registre lançamentos à partir da importação do extrato bancário no formato OFX',
+      icon: <AccountBalance sx={{ fontSize: 40 }} />,
+      path: '/balances',
+      color: '#f4672c',
+      allowedForAll: false,
     },
     {
       title: 'Dashboard',
@@ -54,8 +63,8 @@ export default function Home() {
     },
   ];
 
-  const availableFeatures = user?.isAdmin 
-    ? features 
+  const availableFeatures = user?.isAdmin
+    ? features
     : features.filter(f => f.allowedForAll);
 
   return (
@@ -75,7 +84,7 @@ export default function Home() {
           Sistema de Gestão Financeira da Igreja
         </Typography>
         <Typography variant="body1" sx={{ mt: 2, opacity: 0.9 }}>
-          {user?.isAdmin 
+          {user?.isAdmin
             ? 'Você tem acesso completo a todas as funcionalidades do sistema.'
             : 'Você tem acesso à funcionalidade de lançamentos financeiros.'}
         </Typography>

@@ -12,6 +12,7 @@ import Taxes from './pages/Taxes';
 import Reports from './pages/Reports';
 import Users from './pages/Users';
 import NotFound from './pages/NotFound';
+import AccountReportBalances from './pages/AccountReportBalances';
 
 const queryClient = new QueryClient();
 
@@ -68,6 +69,14 @@ const App = () => (
               element={
                 <PrivateRoute>
                   <Balances />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/balances-account-report"
+              element={
+                <PrivateRoute>
+                  <AccountReportBalances />
                 </PrivateRoute>
               }
             />

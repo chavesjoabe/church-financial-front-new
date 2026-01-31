@@ -101,9 +101,9 @@ export default function Taxas() {
       };
 
       if (tax) {
-        await TaxService.update(tax.id, taxData, token);
+        await TaxService.update(tax.id, taxData);
       } else {
-        await TaxService.create(taxData, token);
+        await TaxService.create(taxData);
       }
 
       await loadTax();
