@@ -172,4 +172,22 @@ export class BalanceService {
     return result
   }
 
+
+  public static async createBalanceByOfxFile(file: File): Promise<void> {
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await fetch(`${API_BASE_URL}/api/balance/create/ofx`, {
+      method: 'POST',
+      headers: {
+        Authorization: BalanceService.getToken(),
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error('Erro ao processar arquivo OFX');
+    }
+  }
 }
