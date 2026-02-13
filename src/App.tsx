@@ -13,6 +13,7 @@ import Reports from './pages/Reports';
 import Users from './pages/Users';
 import NotFound from './pages/NotFound';
 import AccountReportBalances from './pages/AccountReportBalances';
+import ImportedPendingBalances from './pages/ImportedPendingBalances';
 
 const queryClient = new QueryClient();
 
@@ -61,6 +62,14 @@ const App = () => (
               element={
                 <PrivateRoute>
                   <PendingBalances />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/imported-pending-balances"
+              element={
+                <PrivateRoute>
+                  <ImportedPendingBalances />
                 </PrivateRoute>
               }
             />

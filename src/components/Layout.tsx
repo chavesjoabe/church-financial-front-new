@@ -26,7 +26,7 @@ import AssessmentIcon from '@mui/icons-material/Assessment';
 import PeopleIcon from '@mui/icons-material/People';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useAuth } from '../contexts/AuthContext';
-import { AccountBalance } from '@mui/icons-material';
+import { AccountBalance, UploadFile } from '@mui/icons-material';
 
 const drawerWidth = 240;
 
@@ -55,6 +55,7 @@ export const Layout = ({ children }: LayoutProps) => {
     { text: 'Início', icon: <HomeIcon />, path: '/', adminOnly: false },
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard', adminOnly: true },
     { text: 'Lançamentos Pendentes', icon: <PendingActionsIcon />, path: '/pending-balances', adminOnly: false },
+    { text: 'Lançamentos Pendentes - Importação', icon: <UploadFile />, path: '/imported-pending-balances', adminOnly: true },
     { text: 'Lançamentos', icon: <AccountBalanceWalletIcon />, path: '/balances', adminOnly: false },
     { text: 'Lançamentos por extrato', icon: <AccountBalance />, path: '/balances-account-report', adminOnly: true },
     { text: 'Impostos', icon: <ReceiptIcon />, path: '/taxes', adminOnly: true },

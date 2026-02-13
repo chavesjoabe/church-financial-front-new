@@ -25,7 +25,6 @@ import {
   Container,
 } from '@mui/material';
 import { Add, Delete, Edit, ToggleOn, ToggleOff } from '@mui/icons-material';
-import { Layout } from '../components/Layout';
 import { UserService } from '../services/userService';
 import { User } from '../types';
 
@@ -129,9 +128,10 @@ export default function Usuarios() {
     }
   };
 
-  const handleToggleActive = async (id: string) => {
+  const handleToggleActive = async (document: string, activityStatus: boolean) => {
     try {
-      await UserService.toggleActive(id);
+      console.log(document, activityStatus);
+      await UserService.toggleActivity(document, activityStatus);
       await loadUsuarios();
     } catch (error) {
       alert('Erro ao alterar status do usuário');
@@ -179,25 +179,25 @@ export default function Usuarios() {
                   <TableCell>{usuario.email}</TableCell>
                   <TableCell>
                     <Chip
-                      label={usuario.role === 'admin' ? 'Administrador' : 'Usuário'}
+                      label={usuario.role === 'ADMIN' ? 'Administrador' : 'Usuário'}
                       size="small"
-                      color={usuario.role === 'admin' ? 'primary' : 'default'}
+                      color={usuario.role === 'ADMIN' ? 'primary' : 'default'}
                     />
                   </TableCell>
                   <TableCell align="center">
                     <Chip
-                      label={usuario.active ? 'Ativo' : 'Inativo'}
+                      label={usuario.isActive ? 'Ativo' : 'Inativo'}
                       size="small"
-                      color={usuario.active ? 'success' : 'default'}
+                      color={usuario.isActive ? 'success' : 'default'}
                     />
                   </TableCell>
                   <TableCell align="center">
                     <IconButton
                       size="small"
-                      onClick={() => handleToggleActive(usuario.id)}
-                      color={usuario.active ? 'warning' : 'success'}
+                      onClick={() => handleToggleActive(usuario.document, !usuario.isActive)}
+                      color={usuario.isActive ? 'warning' : 'success'}
                     >
-                      {usuario.active ? <ToggleOff /> : <ToggleOn />}
+                      {usuario.isActive ? <ToggleOff /> : <ToggleOn />}
                     </IconButton>
                     <IconButton size="small" onClick={() => handleOpen(usuario)} color="primary">
                       <Edit />

@@ -66,6 +66,24 @@ export class UserService {
     return response.json();
   }
 
+  public static async toggleActivity(document: string, activityStatus: boolean): Promise<User> {
+    const endpoint = activityStatus ? "active" : "unactive";
+
+    const response = await fetch(`${API_BASE_URL}/api/user/${endpoint}/${document}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: this.getToken(),
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Erro ao atualizar usuário');
+    }
+
+    return response.json();
+  }
+
   public static async activate(document: string, token: string): Promise<User> {
     const cleanDocument = document.replace(/\D/g, '');
 
