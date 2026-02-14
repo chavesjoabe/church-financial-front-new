@@ -190,4 +190,20 @@ export class BalanceService {
       throw new Error('Erro ao processar arquivo OFX');
     }
   }
+
+  public static async approveOrRejectMassive(toApproveIds: String[], requestType: "approve" | "reject"): Promise<void> {
+
+    const response = await fetch(`${API_BASE_URL}/api/balance/${requestType}/massive`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: BalanceService.getToken(),
+      },
+      body: JSON.stringify(toApproveIds),
+    });
+
+    if (!response.ok) {
+      throw new Error('Erro ao processar arquivo OFX');
+    }
+  }
 }
