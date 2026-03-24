@@ -108,12 +108,10 @@ export interface ReportFilters {
   category?: string;
 }
 
-export interface DashboardStats {
-  totalIncome: number;
-  totalExpense: number;
-  balance: number;
-  monthIncome: number;
-  monthExpense: number;
+export type DashboardData = {
+  totalIncomings: number;
+  totalOutgoings: number;
+  totalBalance: number;
 }
 
 export interface AuthContextType {
