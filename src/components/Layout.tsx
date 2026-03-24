@@ -54,9 +54,9 @@ export const Layout = ({ children }: LayoutProps) => {
   const menuItems = [
     { text: 'Início', icon: <HomeIcon />, path: '/', adminOnly: false },
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard', adminOnly: true },
+    { text: 'Lançamentos', icon: <AccountBalanceWalletIcon />, path: '/balances', adminOnly: false },
     { text: 'Lançamentos Pendentes', icon: <PendingActionsIcon />, path: '/pending-balances', adminOnly: false },
     { text: 'Lançamentos Pendentes - Importação', icon: <UploadFile />, path: '/imported-pending-balances', adminOnly: true },
-    { text: 'Lançamentos', icon: <AccountBalanceWalletIcon />, path: '/balances', adminOnly: false },
     { text: 'Lançamentos por extrato', icon: <AccountBalance />, path: '/balances-account-report', adminOnly: true },
     { text: 'Impostos', icon: <ReceiptIcon />, path: '/taxes', adminOnly: true },
     { text: 'Relatórios', icon: <AssessmentIcon />, path: '/reports', adminOnly: true },
