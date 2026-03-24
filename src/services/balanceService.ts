@@ -1,4 +1,4 @@
-import { Balance, BalanceItem, ReportData } from '../types';
+import { Balance, DashboardData } from '../types';
 import { API_BASE_URL } from '../config/api';
 
 export class BalanceService {
@@ -205,5 +205,24 @@ export class BalanceService {
     if (!response.ok) {
       throw new Error('Erro ao processar arquivo OFX');
     }
+  }
+
+  public static async getDashboardData(): Promise<DashboardData> {
+
+    const response = await fetch(`${API_BASE_URL}/api/balance/dashboard`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: BalanceService.getToken(),
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Erro ao processar arquivo OFX');
+    }
+
+    const result = await response.json();
+
+    return result;
   }
 }
