@@ -15,16 +15,53 @@ import {
   Chip,
   Checkbox,
   Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  CircularProgress,
 } from '@mui/material';
-import { Check, Close, CheckCircle, Cancel } from '@mui/icons-material';
+import { Check, Close, CheckCircle, Cancel, Edit } from '@mui/icons-material';
 import { BalanceService } from '../services/balanceService';
 import { Balance } from '../types';
 import { useAuth } from '../contexts/AuthContext';
+
+const BALANCE_STATUS_OPTIONS = [
+  { value: 'PENDING', label: 'Pendente' },
+  { value: 'APPROVED', label: 'Aprovado' },
+  { value: 'REJECTED', label: 'Rejeitado' },
+];
+
+const INCOMING_TYPE_OPTIONS = [
+  { value: 'OFICIAL', label: 'Oficial' },
+  { value: 'NON_OFICIAL', label: 'Não oficial' },
+];
+
+interface EditFormData {
+  status: string;
+  incomingType: string;
+  category: string;
+  description: string;
+}
 
 export default function ImportedPendingBalances() {
   const [balances, setBalances] = useState<Balance[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editingBalance, setEditingBalance] = useState<Balance | null>(null);
+  const [editForm, setEditForm] = useState<EditFormData>({
+    status: '',
+    incomingType: '',
+    category: '',
+    description: '',
+  });
+  const [saving, setSaving] = useState(false);
   const { user } = useAuth();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -39,7 +76,7 @@ export default function ImportedPendingBalances() {
     try {
       const data = await BalanceService.getPending();
       setBalances(data);
-      setSelectedIds([]); // Clear selection when reloading
+      setSelectedIds([]);
     } catch (error) {
       console.error('Error loading pending balances:', error);
     } finally {
@@ -91,7 +128,7 @@ export default function ImportedPendingBalances() {
 
     if (window.confirm(`Deseja aprovar ${selectedIds.length} lançamento(s) selecionado(s)?`)) {
       try {
-        await BalanceService.approveOrRejectMassive(selectedIds, "approve");
+        await BalanceService.approveOrRejectMassive(selectedIds, 'approve');
         await loadPendingBalances();
         alert('Lançamentos aprovados com sucesso!');
       } catch (error) {
@@ -109,13 +146,56 @@ export default function ImportedPendingBalances() {
 
     if (window.confirm(`Deseja rejeitar ${selectedIds.length} lançamento(s) selecionado(s)?`)) {
       try {
-        await BalanceService.approveOrRejectMassive(selectedIds, "reject");
+        await BalanceService.approveOrRejectMassive(selectedIds, 'reject');
         await loadPendingBalances();
         alert('Lançamentos rejeitados com sucesso!');
       } catch (error) {
         alert('Erro ao rejeitar lançamentos em massa');
         console.error(error);
       }
+    }
+  };
+
+  const handleOpenEditModal = (balance: Balance) => {
+    setEditingBalance(balance);
+    setEditForm({
+      status: balance.status || 'PENDING',
+      incomingType: balance.incomingType || '',
+      category: balance.category || '',
+      description: balance.description || '',
+    });
+    setEditModalOpen(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setEditModalOpen(false);
+    setEditingBalance(null);
+    setEditForm({ status: '', incomingType: '', category: '', description: '' });
+  };
+
+  const handleEditFormChange = (field: keyof EditFormData, value: string) => {
+    setEditForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editingBalance) return;
+
+    setSaving(true);
+    try {
+      await BalanceService.update(editingBalance.id, {
+        status: editForm.status,
+        incomingType: editForm.incomingType,
+        category: editForm.category,
+        description: editForm.description,
+      });
+      handleCloseEditModal();
+      await loadPendingBalances();
+      alert('Lançamento atualizado com sucesso!');
+    } catch (error) {
+      alert('Erro ao atualizar lançamento');
+      console.error(error);
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -131,7 +211,6 @@ export default function ImportedPendingBalances() {
   };
 
   const canApprove = (balance: Balance) => {
-    // User cannot approve their own balance
     return user?.document !== balance.createdBy;
   };
 
@@ -139,7 +218,7 @@ export default function ImportedPendingBalances() {
     <Box sx={{ maxWidth: 1200, mx: 'auto', px: { xs: 2, sm: 3 } }}>
       <Box sx={{ mb: 4 }}>
         <Typography variant={isMobile ? 'h5' : 'h4'} gutterBottom>
-          Lançamentos Pendentes
+          Lançamentos Pendentes por Exportação
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ display: { xs: 'none', sm: 'block' } }}>
           Aprove ou rejeite lançamentos aguardando revisão
@@ -230,6 +309,15 @@ export default function ImportedPendingBalances() {
                         <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'center' }}>
                           <IconButton
                             size="small"
+                            onClick={() => handleOpenEditModal(balance)}
+                            color="primary"
+                            sx={{ padding: { xs: '4px', sm: '8px' } }}
+                            title="Editar lançamento"
+                          >
+                            <Edit fontSize="small" />
+                          </IconButton>
+                          <IconButton
+                            size="small"
                             onClick={() => handleApprove(balance.id)}
                             color="success"
                             disabled={!canApprove(balance)}
@@ -283,6 +371,89 @@ export default function ImportedPendingBalances() {
           )}
         </>
       )}
+
+      {/* Edit Balance Modal */}
+      <Dialog
+        open={editModalOpen}
+        onClose={saving ? undefined : handleCloseEditModal}
+        maxWidth="sm"
+        fullWidth
+        disableEscapeKeyDown={saving}
+      >
+        <DialogTitle>Editar Lançamento</DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+            {editingBalance && (
+              <Box sx={{ mb: 1, p: 2, bgcolor: 'background.default', borderRadius: 1 }}>
+                <Typography variant="body2" color="text.secondary">
+                  <strong>Valor:</strong> {formatCurrency(editingBalance.value)} &nbsp;|&nbsp;
+                  <strong>Data:</strong> {formatDate(editingBalance.balanceDate)} &nbsp;|&nbsp;
+                  <strong>Tipo:</strong> {editingBalance.type === 'INCOMING' ? 'Entrada' : 'Saída'}
+                </Typography>
+              </Box>
+            )}
+
+            <FormControl fullWidth>
+              <InputLabel>Status</InputLabel>
+              <Select
+                value={editForm.status}
+                label="Status"
+                onChange={(e) => handleEditFormChange('status', e.target.value)}
+              >
+                {BALANCE_STATUS_OPTIONS.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <FormControl fullWidth>
+              <InputLabel>Tipo de Entrada</InputLabel>
+              <Select
+                value={editForm.incomingType}
+                label="Tipo de Entrada"
+                onChange={(e) => handleEditFormChange('incomingType', e.target.value)}
+              >
+                {INCOMING_TYPE_OPTIONS.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <TextField
+              fullWidth
+              label="Categoria"
+              value={editForm.category}
+              onChange={(e) => handleEditFormChange('category', e.target.value)}
+            />
+
+            <TextField
+              fullWidth
+              label="Descrição"
+              value={editForm.description}
+              onChange={(e) => handleEditFormChange('description', e.target.value)}
+              multiline
+              rows={3}
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={handleCloseEditModal} disabled={saving}>
+            Cancelar
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleSaveEdit}
+            disabled={saving}
+            startIcon={saving ? <CircularProgress size={18} /> : undefined}
+          >
+            {saving ? 'Salvando...' : 'Salvar'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
