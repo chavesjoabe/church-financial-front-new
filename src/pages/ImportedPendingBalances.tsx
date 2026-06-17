@@ -39,7 +39,26 @@ const BALANCE_STATUS_OPTIONS = [
 
 const INCOMING_TYPE_OPTIONS = [
   { value: 'OFICIAL', label: 'Oficial' },
-  { value: 'NON_OFICIAL', label: 'Não oficial' },
+  { value: 'NON_OFICIAL', label: 'Não Oficial' },
+];
+
+const INCOMING_CATEGORY_OPTIONS = [
+  { value: 'IMPORTAÇAO EXTRATO', label: 'Importação Extrato' },
+  { value: 'DIZIMO', label: 'Dízimo' },
+  { value: 'OFERTA', label: 'Oferta' },
+  { value: 'DOAÇAO', label: 'Doação' },
+  { value: 'TRANSFER', label: 'Repasse' },
+  { value: 'OTHER', label: 'Outro' },
+];
+
+const OUTGOING_CATEGORY_OPTIONS = [
+  { value: 'IMPORTAÇAO EXTRATO', label: 'Importação Extrato' },
+  { value: 'ALIMENTAÇÃO', label: 'Alimentação' },
+  { value: 'OFERTA MISSIONÁRIA', label: 'Oferta Missionária' },
+  { value: 'COMPRAS DIVERSAS', label: 'Compras Diversas' },
+  { value: 'PAGAMENTOS', label: 'Pagamentos' },
+  { value: 'REEMBOLSOS', label: 'Reembolsos' },
+  { value: 'OUTROS', label: 'Outros' },
 ];
 
 interface EditFormData {
@@ -74,7 +93,7 @@ export default function ImportedPendingBalances() {
   const loadPendingBalances = async () => {
     setLoading(true);
     try {
-      const data = await BalanceService.getPending();
+      const data = await BalanceService.getOfxImportPendingBalances();
       setBalances(data);
       setSelectedIds([]);
     } catch (error) {
@@ -213,6 +232,8 @@ export default function ImportedPendingBalances() {
   const canApprove = (balance: Balance) => {
     return user?.document !== balance.createdBy;
   };
+
+  const isOutgoing = editingBalance?.type === 'OUTGOING';
 
   return (
     <Box sx={{ maxWidth: 1200, mx: 'auto', px: { xs: 2, sm: 3 } }}>
@@ -408,27 +429,54 @@ export default function ImportedPendingBalances() {
               </Select>
             </FormControl>
 
-            <FormControl fullWidth>
-              <InputLabel>Tipo de Entrada</InputLabel>
-              <Select
-                value={editForm.incomingType}
-                label="Tipo de Entrada"
-                onChange={(e) => handleEditFormChange('incomingType', e.target.value)}
-              >
-                {INCOMING_TYPE_OPTIONS.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            {!isOutgoing && (
+              <FormControl fullWidth>
+                <InputLabel>Tipo de Entrada</InputLabel>
+                <Select
+                  value={editForm.incomingType}
+                  label="Tipo de Entrada"
+                  onChange={(e) => handleEditFormChange('incomingType', e.target.value)}
+                >
+                  {INCOMING_TYPE_OPTIONS.map((option) => (
+                    <MenuItem key={option.value} value={option.value} defaultValue="OFICIAL">
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
 
-            <TextField
-              fullWidth
-              label="Categoria"
-              value={editForm.category}
-              onChange={(e) => handleEditFormChange('category', e.target.value)}
-            />
+            {isOutgoing ? (
+              <FormControl fullWidth>
+                <InputLabel>Categoria</InputLabel>
+                <Select
+                  value={editForm.category}
+                  label="Categoria"
+                  onChange={(e) => handleEditFormChange('category', e.target.value)}
+                >
+                  {OUTGOING_CATEGORY_OPTIONS.map((option) => (
+                    <MenuItem key={option.value} value={option.value} defaultValue="IMPORTAÇAO EXTRATO">
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            ) : (
+              <FormControl fullWidth>
+                <InputLabel>Categoria</InputLabel>
+                <Select
+                  value={editForm.category}
+                  label="Categoria"
+                  onChange={(e) => handleEditFormChange('category', e.target.value)}
+                >
+                  {INCOMING_CATEGORY_OPTIONS.map((option) => (
+                    <MenuItem key={option.value} value={option.value} defaultValue="IMPORTAÇAO EXTRATO">
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
 
             <TextField
               fullWidth
