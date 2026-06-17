@@ -90,6 +90,21 @@ export class BalanceService {
     }
   }
 
+  public static async getOfxImportPendingBalances(): Promise<Balance[]> {
+    const response = await fetch(`${API_BASE_URL}/api/balance/all/pending/import`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: this.getToken(),
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Erro ao buscar lançamentos pendentes');
+    }
+
+    return response.json();
+  }
+
   public static async getPending(): Promise<Balance[]> {
     const response = await fetch(`${API_BASE_URL}/api/balance/pending`, {
       headers: {
@@ -103,6 +118,7 @@ export class BalanceService {
     }
 
     return response.json();
+
   }
 
   public static async approve(balanceId: string): Promise<Balance> {
